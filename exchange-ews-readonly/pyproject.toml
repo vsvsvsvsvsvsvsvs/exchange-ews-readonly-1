@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exchange-ews-readonly"
+version = "0.1.0"
+description = "OpenClaw read-only Exchange EWS skill package"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "exchangelib>=5.5.0,<6.0.0",
+  "python-dotenv>=1.0.1,<2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0,<9.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["exchange_ews_readonly*"]

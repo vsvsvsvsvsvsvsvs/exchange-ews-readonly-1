@@ -1,0 +1,6 @@
+{
+  "status": "ok",
+  "server": "mail.example.local",
+  "email": "user@example.local",
+  "inbox_accessible": true
+}

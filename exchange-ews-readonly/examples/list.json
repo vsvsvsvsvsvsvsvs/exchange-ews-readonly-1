@@ -1,0 +1,16 @@
+[
+  {
+    "id": "AAMkADk2YjQzY...",
+    "subject": "Quarterly report",
+    "sender": "finance@example.local",
+    "datetime_received": "2026-02-14T09:12:31+00:00",
+    "preview": "Please review the attached quarterly figures..."
+  },
+  {
+    "id": "AAMkADk2YjQzZ...",
+    "subject": "Team sync notes",
+    "sender": "pm@example.local",
+    "datetime_received": "2026-02-14T08:05:09+00:00",
+    "preview": "Summary of decisions from today's sync..."
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "id": "AAMkADk2YjQzY...",
+  "subject": "Quarterly report",
+  "sender": "finance@example.local",
+  "to_recipients": [
+    "user@example.local"
+  ],
+  "cc_recipients": [
+    "manager@example.local"
+  ],
+  "datetime_received": "2026-02-14T09:12:31+00:00",
+  "body_preview": "Please review the attached quarterly figures..."
+}
