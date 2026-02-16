@@ -157,10 +157,24 @@ def test_list_messages_handles_empty_or_broken_fields() -> None:
 
 
 def test_get_message_trims_preview() -> None:
-    service = EwsReadonlyService(settings=_settings(), account_factory=lambda _: _FakeAccount())
-    detail = service.get_message("1", preview=10)
-    assert detail.body_preview.endswith("...")
-    assert len(detail.body_preview) == 10
+    class _CustomAccount:
+        def __init__(self) -> None:
+            self.inbox = _FakeInbox(
+                [
+                    _FakeItem("long", "Long body", "sender@example.local", "This is a long body text"),
+                    _FakeItem("short", "Short body", "sender@example.local", "Body one"),
+                ]
+            )
+
+    service = EwsReadonlyService(settings=_settings(), account_factory=lambda _: _CustomAccount())
+
+    long_detail = service.get_message("long", preview=10)
+    assert long_detail.body_preview.endswith("...")
+    assert len(long_detail.body_preview) == 10
+
+    short_detail = service.get_message("short", preview=10)
+    assert short_detail.body_preview == "Body one"
+    assert not short_detail.body_preview.endswith("...")
 
 
 def test_search_messages_respects_result_limit() -> None:
