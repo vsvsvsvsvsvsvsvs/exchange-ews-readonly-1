@@ -9,6 +9,7 @@ cd /Users/vsevolodiakovlev/Documents/New\ project/exchange-ews-readonly
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 cp .env.example .env
 ```
 
@@ -29,6 +30,16 @@ EXCHANGE_EWS_TIMEOUT_SEC=30
 Notes:
 - `EXCHANGE_EWS_USERNAME` is optional; if empty, `EXCHANGE_EWS_EMAIL` is used.
 - `EXCHANGE_EWS_AUTH_TYPE` supports `NTLM` (default) and `BASIC`.
+
+## Tests
+
+```bash
+cd /Users/vsevolodiakovlev/Documents/New\ project/exchange-ews-readonly
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e .
+pytest -q
+```
 
 ## Commands
 

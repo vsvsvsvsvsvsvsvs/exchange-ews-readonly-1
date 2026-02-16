@@ -24,3 +24,6 @@ package-dir = {"" = "."}
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["exchange_ews_readonly*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
