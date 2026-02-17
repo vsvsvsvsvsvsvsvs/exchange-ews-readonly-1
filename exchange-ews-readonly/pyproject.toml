@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 dependencies = [
   "exchangelib>=5.5.0,<6.0.0",
   "python-dotenv>=1.0.1,<2.0.0",
+  "cryptography>=42.0.0,<44.0.0",
 ]
 
 [project.optional-dependencies]

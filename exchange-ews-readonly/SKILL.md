@@ -21,7 +21,9 @@ Use this skill when the user needs to read Exchange mailbox data from on-prem EW
 - `EXCHANGE_EWS_SERVER`
 - `EXCHANGE_EWS_EMAIL`
 - `EXCHANGE_EWS_USERNAME` (optional, fallback to email)
-- `EXCHANGE_EWS_PASSWORD`
+- `EXCHANGE_EWS_CRYPTO_KEY`
+- `EXCHANGE_EWS_PASSWORD_ENC`
+- `EXCHANGE_EWS_ALLOW_PLAINTEXT_PASSWORD` (optional migration fallback)
 - `EXCHANGE_EWS_AUTH_TYPE` (`NTLM` default, optional `BASIC`)
 - `EXCHANGE_EWS_VERIFY_TLS` (default `true`)
 - `EXCHANGE_EWS_TIMEOUT_SEC` (default `30`)

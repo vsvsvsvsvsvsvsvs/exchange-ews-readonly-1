@@ -6,6 +6,12 @@ from enum import Enum
 
 from .errors import ConfigError
 
+try:
+    from cryptography.fernet import Fernet, InvalidToken
+except Exception:  # pragma: no cover - dependency/runtime dependent
+    Fernet = None  # type: ignore[assignment]
+    InvalidToken = Exception  # type: ignore[assignment]
+
 
 class AuthType(str, Enum):
     NTLM = "NTLM"
@@ -43,7 +49,7 @@ class Settings:
         server = _read_server("EXCHANGE_EWS_SERVER")
         email = _read_email("EXCHANGE_EWS_EMAIL")
         username = _optional_env("EXCHANGE_EWS_USERNAME") or email
-        password = _require_env("EXCHANGE_EWS_PASSWORD")
+        password = _read_password()
 
         raw_auth = os.getenv("EXCHANGE_EWS_AUTH_TYPE", AuthType.NTLM.value).strip().upper()
         auth_type = _read_auth_type(raw_auth)
@@ -95,6 +101,48 @@ def _require_env(name: str) -> str:
 
 def _optional_env(name: str) -> str:
     return os.getenv(name, "").strip()
+
+
+def _read_password() -> str:
+    encrypted = _optional_env("EXCHANGE_EWS_PASSWORD_ENC")
+    if encrypted:
+        key = _require_env("EXCHANGE_EWS_CRYPTO_KEY")
+        return _decrypt_password(encrypted=encrypted, key=key)
+
+    allow_plaintext = _read_bool("EXCHANGE_EWS_ALLOW_PLAINTEXT_PASSWORD", default=False)
+    if allow_plaintext:
+        return _require_env("EXCHANGE_EWS_PASSWORD")
+
+    raise ConfigError(
+        "Missing required environment variable: EXCHANGE_EWS_PASSWORD_ENC "
+        "(or set EXCHANGE_EWS_ALLOW_PLAINTEXT_PASSWORD=true for migration)"
+    )
+
+
+def _decrypt_password(encrypted: str, key: str) -> str:
+    if Fernet is None:
+        raise ConfigError("cryptography dependency is required for encrypted password support")
+    try:
+        token_bytes = encrypted.encode("utf-8")
+    except Exception as exc:
+        raise ConfigError("EXCHANGE_EWS_PASSWORD_ENC must be valid UTF-8 text") from exc
+
+    try:
+        fernet = Fernet(key.encode("utf-8"))
+    except Exception as exc:
+        raise ConfigError("EXCHANGE_EWS_CRYPTO_KEY is invalid for Fernet decryption") from exc
+
+    try:
+        decrypted = fernet.decrypt(token_bytes)
+    except InvalidToken as exc:
+        raise ConfigError("EXCHANGE_EWS_PASSWORD_ENC cannot be decrypted with EXCHANGE_EWS_CRYPTO_KEY") from exc
+    except Exception as exc:
+        raise ConfigError("Failed to decrypt EXCHANGE_EWS_PASSWORD_ENC") from exc
+
+    password = decrypted.decode("utf-8").strip()
+    if not password:
+        raise ConfigError("Decrypted password is empty")
+    return password
 
 
 def _read_bool(name: str, default: bool) -> bool:

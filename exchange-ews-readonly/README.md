@@ -21,7 +21,8 @@ Edit `.env` with your Exchange values:
 EXCHANGE_EWS_SERVER=mail.example.local
 EXCHANGE_EWS_EMAIL=user@example.local
 EXCHANGE_EWS_USERNAME=EXAMPLE\\user
-EXCHANGE_EWS_PASSWORD=change-me
+EXCHANGE_EWS_CRYPTO_KEY=<fernet-key>
+EXCHANGE_EWS_PASSWORD_ENC=<encrypted-password>
 EXCHANGE_EWS_AUTH_TYPE=NTLM
 EXCHANGE_EWS_VERIFY_TLS=true
 EXCHANGE_EWS_TIMEOUT_SEC=30
@@ -30,6 +31,20 @@ EXCHANGE_EWS_TIMEOUT_SEC=30
 Notes:
 - `EXCHANGE_EWS_USERNAME` is optional; if empty, `EXCHANGE_EWS_EMAIL` is used.
 - `EXCHANGE_EWS_AUTH_TYPE` supports `NTLM` (default) and `BASIC`.
+- Password is expected in encrypted form (`EXCHANGE_EWS_PASSWORD_ENC`) and is decrypted at runtime using `EXCHANGE_EWS_CRYPTO_KEY`.
+- Plaintext password is supported only for migration with `EXCHANGE_EWS_ALLOW_PLAINTEXT_PASSWORD=true`.
+
+Generate encrypted password:
+
+```bash
+python - <<'PY'
+from cryptography.fernet import Fernet
+key = Fernet.generate_key()
+enc = Fernet(key).encrypt(b"your-mail-password")
+print("EXCHANGE_EWS_CRYPTO_KEY=" + key.decode())
+print("EXCHANGE_EWS_PASSWORD_ENC=" + enc.decode())
+PY
+```
 
 ## Tests
 
@@ -105,5 +120,5 @@ Hard limits:
 
 5. Missing/invalid env values
 - Re-check required variables:
-  `EXCHANGE_EWS_SERVER`, `EXCHANGE_EWS_EMAIL`, `EXCHANGE_EWS_PASSWORD`.
+  `EXCHANGE_EWS_SERVER`, `EXCHANGE_EWS_EMAIL`, `EXCHANGE_EWS_CRYPTO_KEY`, `EXCHANGE_EWS_PASSWORD_ENC`.
 - Ensure `EXCHANGE_EWS_TIMEOUT_SEC` is integer in `1..300`.
